@@ -4,7 +4,7 @@ import com.microsoft.schemas.exchange.services._2006.messages._
 import com.microsoft.schemas.exchange.services._2006.types._
 import org.no.ip.bca.exchange.web.services.ExchangeServicesStub
 
-class Folder private[exchange](ews: ExchangeServicesStub, folderId: FolderIdType) {
+class Folder private[exchange](ews: ExchangeServicesStub, folderId: FolderIdType) extends VersionHelper {
   private lazy val folder = {
     val getFolderDocument = GetFolderDocument.Factory.newInstance
     getFolderDocument setGetFolder {
@@ -71,16 +71,6 @@ class Folder private[exchange](ews: ExchangeServicesStub, folderId: FolderIdType
     nonEmptyArrayOfBaseFolderIdsType.addNewFolderId // Expand array so we can add clone:
     nonEmptyArrayOfBaseFolderIdsType.setFolderIdArray(0, folder.getFolderId.copy.asInstanceOf[FolderIdType])
     nonEmptyArrayOfBaseFolderIdsType
-  }
-  
-  private def requestVersion = {
-    val requestServerVersion = RequestServerVersionDocument.Factory.newInstance
-    requestServerVersion setRequestServerVersion {
-      val requestServerVersion = RequestServerVersionDocument.RequestServerVersion.Factory.newInstance
-      requestServerVersion setVersion ExchangeVersionType.EXCHANGE_2007
-      requestServerVersion
-    }
-    requestServerVersion
   }
   
   override def toString = getDisplayName

@@ -13,9 +13,10 @@ private [exchange] object Helper {
   val UTF_8 = Charset.forName("UTF-8")
   def asString(bytes: Array[Byte]) = new String(Base64.encodeBase64(bytes), UTF_8)
   def asBytes(string: String) = Base64.decodeBase64(string getBytes UTF_8)
+  def option[T](t: T): Option[T] = if (t == null) None else Some(t)
 }
 
-class ExchangeWebServices(server: String, domain: String, username: String, password: String) {
+class ExchangeWebServices(server: String, domain: String, username: String, password: String) extends VersionHelper {
   private val ews = new ExchangeServicesStub("https://" + server + "/EWS/Exchange.asmx")
   ews._getServiceClient.getOptions.setProperty(HTTPConstants.AUTHENTICATE, {
     val auth = new HttpTransportProperties.Authenticator
@@ -81,15 +82,5 @@ class ExchangeWebServices(server: String, domain: String, username: String, pass
       getFolderType
     }
     getFolderReq
-  }
-  
-  private def requestVersion = {
-    val requestServerVersion = RequestServerVersionDocument.Factory.newInstance
-    requestServerVersion setRequestServerVersion {
-      val requestServerVersion = RequestServerVersionDocument.RequestServerVersion.Factory.newInstance
-      requestServerVersion setVersion ExchangeVersionType.EXCHANGE_2007
-      requestServerVersion
-    }
-    requestServerVersion
   }
 }
